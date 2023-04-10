@@ -4,39 +4,29 @@ services:
   redis-master:
     container_name: redis_master
     image: redis:7
-    ports:
-      - "6379:6379"
- 
+    network_mode: host
+
   redis-slave-1:
     container_name: redis_slave_1
     image: redis:7
-    command: redis-server --slaveof redis-master 6379 --port 6380
-    links:
-      - redis-master
-    ports:
-      - "6380:6380"
+    command: redis-server --slaveof localhost 6379 --port 6380
+    network_mode: host
  
   redis-slave-2:
     container_name: redis_slave_2
     image: redis:7
-    command: redis-server --slaveof redis-master 6379 --port 6381
-    links:
-      - redis-master
-    ports:
-      - "6381:6381"
-     
+    command: redis-server --slaveof 127.0.0.1 6379 --port 6381
+    network_mode: host
+
   redis-sentinel-1:
     container_name: redis_sentinel_1
     build: 
       context: ./redis-sentinel
+    network_mode: host
     depends_on:
       - redis-master
       - redis-slave-1
       - redis-slave-2
-    links:
-      - redis-master
-    ports:
-      - "26379:26379" 
     environment:
       - SENTINEL_PORT=26379
 
@@ -44,14 +34,11 @@ services:
     container_name: redis_sentinel_2
     build: 
       context: ./redis-sentinel
+    network_mode: host
     depends_on:
       - redis-master
       - redis-slave-1
       - redis-slave-2
-    links:
-      - redis-master
-    ports:
-      - "26380:26380"
     environment:
       - SENTINEL_PORT=26380
 
@@ -59,13 +46,10 @@ services:
     container_name: redis_sentinel_3
     build: 
       context: ./redis-sentinel
+    network_mode: host
     depends_on:
       - redis-master
       - redis-slave-1
       - redis-slave-2
-    links:
-      - redis-master
-    ports:
-      - "26381:26381"
     environment:
       - SENTINEL_PORT=26381
