@@ -12,8 +12,9 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	rdb := redis.NewFailoverClient(&redis.FailoverOptions{
-		MasterName: "mymaster",
+	rdb := redis.NewFailoverClusterClient(&redis.FailoverOptions{
+		MasterName:    "mymaster",
+		RouteRandomly: true,
 		SentinelAddrs: []string{
 			":26379",
 			":26380",
